@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ClipboardList, Award, CheckCircle2, Clock, XCircle, User, GraduationCap, MapPin } from 'lucide-react';
+import { ClipboardList, Award, CheckCircle2, Clock, XCircle, User, GraduationCap, MapPin, Mail } from 'lucide-react';
 import useAuthStore from '../../store/authStore';
 import api from '../../api/axios';
 import Loader from '../../components/common/Loader';
