@@ -80,27 +80,8 @@ const getStudents = async (req, res, next) => {
     const schoolId = req.user.school;
     const { search, class: className, section } = req.query;
 
-    // Build user search query if search term is provided
-    const userQuery = { role: 'student' };
-    if (schoolId) {
-      userQuery.school = schoolId;
-    }
-
-    if (search) {
-      userQuery.$or = [
-        { name: { $regex: search, $options: 'i' } },
-        { email: { $regex: search, $options: 'i' } },
-      ];
-    }
-
-    const matchingUsers = await User.find(userQuery).select('_id');
-    const userIds = matchingUsers.map((u) => u._id);
-
-    // Build student query
-    const studentQuery = {
-      school: schoolId,
-      user: { $in: userIds },
-    };
+    // Build student query using basic MongoDB filters
+    const studentQuery = { school: schoolId };
 
     if (className) {
       studentQuery.class = className;
@@ -110,7 +91,17 @@ const getStudents = async (req, res, next) => {
       studentQuery.section = section.toUpperCase();
     }
 
-    const students = await Student.find(studentQuery).populate('user').sort({ rollNumber: 1 });
+    let students = await Student.find(studentQuery).populate('user').sort({ rollNumber: 1 });
+
+    // Filter in JS memory if search term is provided
+    if (search) {
+      const term = search.toLowerCase();
+      students = students.filter((student) => {
+        const name = student.user?.name ? student.user.name.toLowerCase() : '';
+        const email = student.user?.email ? student.user.email.toLowerCase() : '';
+        return name.includes(term) || email.includes(term);
+      });
+    }
 
     res.status(200).json({
       success: true,

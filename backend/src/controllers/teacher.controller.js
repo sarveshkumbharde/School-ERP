@@ -78,27 +78,18 @@ const getTeachers = async (req, res, next) => {
     const schoolId = req.user.school;
     const { search } = req.query;
 
-    const userQuery = { role: 'teacher' };
-    if (schoolId) {
-      userQuery.school = schoolId;
-    }
+    // Fetch all teachers for this school
+    let teachers = await Teacher.find({ school: schoolId }).populate('user').sort({ employeeId: 1 });
 
+    // Filter in JS memory if search term is provided
     if (search) {
-      userQuery.$or = [
-        { name: { $regex: search, $options: 'i' } },
-        { email: { $regex: search, $options: 'i' } },
-      ];
+      const term = search.toLowerCase();
+      teachers = teachers.filter((teacher) => {
+        const name = teacher.user?.name ? teacher.user.name.toLowerCase() : '';
+        const email = teacher.user?.email ? teacher.user.email.toLowerCase() : '';
+        return name.includes(term) || email.includes(term);
+      });
     }
-
-    const matchingUsers = await User.find(userQuery).select('_id');
-    const userIds = matchingUsers.map((u) => u._id);
-
-    const query = {
-      school: schoolId,
-      user: { $in: userIds },
-    };
-
-    const teachers = await Teacher.find(query).populate('user').sort({ employeeId: 1 });
 
     res.status(200).json({
       success: true,

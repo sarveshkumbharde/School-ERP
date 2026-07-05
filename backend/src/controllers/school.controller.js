@@ -103,15 +103,18 @@ const getSchools = async (req, res, next) => {
       query.status = status;
     }
 
-    if (search) {
-      query.$or = [
-        { name: { $regex: search, $options: 'i' } },
-        { schoolCode: { $regex: search, $options: 'i' } },
-        { city: { $regex: search, $options: 'i' } },
-      ];
-    }
+    let schools = await School.find(query).sort({ createdAt: -1 });
 
-    const schools = await School.find(query).sort({ createdAt: -1 });
+    // Filter in JS memory if search term is provided (Approach A)
+    if (search) {
+      const term = search.toLowerCase();
+      schools = schools.filter((school) => {
+        const name = school.name ? school.name.toLowerCase() : '';
+        const schoolCode = school.schoolCode ? school.schoolCode.toLowerCase() : '';
+        const city = school.city ? school.city.toLowerCase() : '';
+        return name.includes(term) || schoolCode.includes(term) || city.includes(term);
+      });
+    }
 
     res.status(200).json({
       success: true,
