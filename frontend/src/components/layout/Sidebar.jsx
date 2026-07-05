@@ -95,6 +95,7 @@ const Sidebar = ({ isOpen, onClose }) => {
               <NavLink
                 key={link.to}
                 to={link.to}
+                end
                 onClick={onClose}
                 className={({ isActive }) => (isActive ? activeClass : inactiveClass)}
               >

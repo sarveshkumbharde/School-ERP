@@ -110,11 +110,11 @@ const seedData = async () => {
     // 7. Create 5 Students
     console.log('Creating Students...');
     const studentsData = [
-      { name: 'Charlie Brown', email: 'charlie@greenwood.com', rollNumber: 'R001', class: '10-A', section: 'A', dob: '2010-05-12', gender: 'male', phone: '+1 555-0301' },
-      { name: 'Diana Prince', email: 'diana@greenwood.com', rollNumber: 'R002', class: '10-A', section: 'A', dob: '2010-08-22', gender: 'female', phone: '+1 555-0302' },
-      { name: 'Evan Wright', email: 'evan@greenwood.com', rollNumber: 'R003', class: '10-A', section: 'A', dob: '2010-11-05', gender: 'male', phone: '+1 555-0303' },
-      { name: 'Fiona Gallagher', email: 'fiona@greenwood.com', rollNumber: 'R004', class: '9-B', section: 'B', dob: '2011-02-14', gender: 'female', phone: '+1 555-0304' },
-      { name: 'George Costanza', email: 'george@greenwood.com', rollNumber: 'R005', class: '9-B', section: 'B', dob: '2011-06-30', gender: 'male', phone: '+1 555-0305' },
+      { name: 'Charlie Brown', email: 'charlie@greenwood.com', rollNumber: 'R001', class: '10', section: 'A', dob: '2010-05-12', gender: 'male', phone: '+1 555-0301' },
+      { name: 'Diana Prince', email: 'diana@greenwood.com', rollNumber: 'R002', class: '10', section: 'A', dob: '2010-08-22', gender: 'female', phone: '+1 555-0302' },
+      { name: 'Evan Wright', email: 'evan@greenwood.com', rollNumber: 'R003', class: '10', section: 'A', dob: '2010-11-05', gender: 'male', phone: '+1 555-0303' },
+      { name: 'Fiona Gallagher', email: 'fiona@greenwood.com', rollNumber: 'R004', class: '9', section: 'B', dob: '2011-02-14', gender: 'female', phone: '+1 555-0304' },
+      { name: 'George Costanza', email: 'george@greenwood.com', rollNumber: 'R005', class: '9', section: 'B', dob: '2011-06-30', gender: 'male', phone: '+1 555-0305' },
     ];
 
     const students = [];
@@ -156,13 +156,13 @@ const seedData = async () => {
 
     const attendanceRecords = [
       // Yesterday 10-A
-      { student: students[0]._id, school: school._id, class: '10-A', section: 'A', date: yesterday, status: 'present', markedBy: teacher1User._id },
-      { student: students[1]._id, school: school._id, class: '10-A', section: 'A', date: yesterday, status: 'present', markedBy: teacher1User._id },
-      { student: students[2]._id, school: school._id, class: '10-A', section: 'A', date: yesterday, status: 'absent', markedBy: teacher1User._id },
+      { student: students[0]._id, school: school._id, class: '10', section: 'A', date: yesterday, status: 'present', markedBy: teacher1User._id },
+      { student: students[1]._id, school: school._id, class: '10', section: 'A', date: yesterday, status: 'present', markedBy: teacher1User._id },
+      { student: students[2]._id, school: school._id, class: '10', section: 'A', date: yesterday, status: 'absent', markedBy: teacher1User._id },
       // Today 10-A
-      { student: students[0]._id, school: school._id, class: '10-A', section: 'A', date: today, status: 'present', markedBy: teacher1User._id },
-      { student: students[1]._id, school: school._id, class: '10-A', section: 'A', date: today, status: 'late', markedBy: teacher1User._id },
-      { student: students[2]._id, school: school._id, class: '10-A', section: 'A', date: today, status: 'present', markedBy: teacher1User._id },
+      { student: students[0]._id, school: school._id, class: '10', section: 'A', date: today, status: 'present', markedBy: teacher1User._id },
+      { student: students[1]._id, school: school._id, class: '10', section: 'A', date: today, status: 'late', markedBy: teacher1User._id },
+      { student: students[2]._id, school: school._id, class: '10', section: 'A', date: today, status: 'present', markedBy: teacher1User._id },
     ];
 
     await Attendance.create(attendanceRecords);

@@ -24,6 +24,7 @@ router.use(protect);
 router.use(authorize('super_admin'));
 
 router.get('/', getSchools);
+router.post('/', validate(registerSchoolSchema), registerSchool);
 router.get('/:id', getSchoolById);
 router.patch('/:id/approve', approveSchool);
 router.patch('/:id/reject', rejectSchool);

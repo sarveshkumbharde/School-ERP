@@ -3,9 +3,12 @@ import { useNavigate, Link } from 'react-router-dom';
 import { School, User, Lock, Mail, Phone, MapPin, Building, Globe, ArrowLeft, CheckCircle2, AlertCircle } from 'lucide-react';
 import api from '../../api/axios';
 import FormInput from '../../components/common/FormInput';
+import useAuthStore from '../../store/authStore';
 
 const RegisterSchool = () => {
   const navigate = useNavigate();
+  const { user } = useAuthStore();
+  const isSuperAdmin = user && user.role === 'super_admin';
 
   const [formData, setFormData] = useState({
     name: '',
@@ -75,8 +78,14 @@ const RegisterSchool = () => {
     setApiError('');
 
     try {
-      await api.post('/schools/register', formData);
-      setIsSuccess(true);
+      const endpoint = isSuperAdmin ? '/schools' : '/schools/register';
+      await api.post(endpoint, formData);
+      if (isSuperAdmin) {
+        // Super Admin gets sent back to their schools list directly
+        navigate('/super-admin/schools');
+      } else {
+        setIsSuccess(true);
+      }
     } catch (err) {
       const msg = err.response?.data?.message || 'School registration failed. Please try again.';
       setApiError(msg);
@@ -117,12 +126,12 @@ const RegisterSchool = () => {
         {/* Header */}
         <div className="px-8 py-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
           <div className="flex items-center gap-3">
-            <Link to="/login" className="p-2 hover:bg-slate-100 text-slate-400 hover:text-slate-600 rounded-lg btn-transition">
+            <Link to={isSuperAdmin ? "/super-admin/dashboard" : "/login"} className="p-2 hover:bg-slate-100 text-slate-400 hover:text-slate-600 rounded-lg btn-transition">
               <ArrowLeft size={16} />
             </Link>
             <div>
-              <h2 className="text-xl font-bold text-slate-800">School Onboarding</h2>
-              <p className="text-xs text-slate-400 font-medium">Register your school and administrator account</p>
+              <h2 className="text-xl font-bold text-slate-800">{isSuperAdmin ? "Onboard School" : "School Onboarding"}</h2>
+              <p className="text-xs text-slate-400 font-medium">{isSuperAdmin ? "Directly onboard an approved, active school" : "Register your school and administrator account"}</p>
             </div>
           </div>
           <div className="h-10 w-10 bg-primary-600 text-white rounded-xl flex items-center justify-center shadow-md shadow-primary-500/10">
@@ -133,7 +142,7 @@ const RegisterSchool = () => {
         {/* Form Container */}
         <form onSubmit={handleSubmit} className="p-8 flex flex-col gap-6 overflow-y-auto max-h-[75vh]">
           {apiError && (
-            <div className="flex items-start gap-2.5 p-3.5 bg-red-50 text-red-700 border border-red-150 rounded-2xl text-xs font-medium animate-in fade-in slide-in-from-top-2 duration-200">
+            <div className="flex items-start gap-2.5 p-3.5 bg-red-50 text-red-755 border border-red-150 rounded-2xl text-xs font-medium animate-in fade-in slide-in-from-top-2 duration-200">
               <AlertCircle size={16} className="flex-shrink-0 mt-0.5" />
               <p>{apiError}</p>
             </div>
@@ -266,19 +275,31 @@ const RegisterSchool = () => {
 
           {/* Submit */}
           <div className="mt-4 pt-4 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <span className="text-xs text-slate-400">
-              Already have an account?{' '}
-              <Link to="/login" className="text-primary-600 hover:text-primary-700 font-semibold underline">
-                Log In
-              </Link>
-            </span>
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="px-6 py-3 bg-primary-600 hover:bg-primary-700 disabled:bg-primary-400 text-white font-semibold text-sm rounded-xl shadow-lg shadow-primary-500/10 hover:shadow-primary-500/20 btn-transition bounce-hover text-center"
-            >
-              {isSubmitting ? 'Registering School...' : 'Submit Onboarding Request'}
-            </button>
+            {!isSuperAdmin ? (
+              <>
+                <span className="text-xs text-slate-400">
+                  Already have an account?{' '}
+                  <Link to="/login" className="text-primary-600 hover:text-primary-700 font-semibold underline">
+                    Log In
+                  </Link>
+                </span>
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="px-6 py-3 bg-primary-600 hover:bg-primary-700 disabled:bg-primary-400 text-white font-semibold text-sm rounded-xl shadow-lg shadow-primary-500/10 hover:shadow-primary-500/20 btn-transition bounce-hover text-center"
+                >
+                  {isSubmitting ? 'Registering School...' : 'Submit Onboarding Request'}
+                </button>
+              </>
+            ) : (
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="px-6 py-3 ml-auto bg-primary-600 hover:bg-primary-700 disabled:bg-primary-400 text-white font-semibold text-sm rounded-xl shadow-lg shadow-primary-500/10 hover:shadow-primary-500/20 btn-transition bounce-hover text-center w-full sm:w-auto"
+              >
+                {isSubmitting ? 'Onboarding...' : 'Onboard & Activate School'}
+              </button>
+            )}
           </div>
         </form>
       </div>

@@ -5,6 +5,7 @@ import useAuthStore from '../../store/authStore';
 import api from '../../api/axios';
 import Loader from '../../components/common/Loader';
 import SelectInput from '../../components/common/SelectInput';
+import FormInput from '../../components/common/FormInput';
 import DataTable from '../../components/common/DataTable';
 import EmptyState from '../../components/common/EmptyState';
 

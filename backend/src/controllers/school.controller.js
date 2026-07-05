@@ -41,7 +41,13 @@ const registerSchool = async (req, res, next) => {
       return next(new AppError(`Admin user with email '${adminEmail}' already exists.`, 409));
     }
 
-    // Create the School (starts with status pending)
+    // Check if created by Super Admin (means it is immediately approved)
+    const isSuperAdmin = req.user && req.user.role === 'super_admin';
+    const status = isSuperAdmin ? 'approved' : 'pending';
+    const approvedBy = isSuperAdmin ? req.user._id : null;
+    const approvedAt = isSuperAdmin ? new Date() : null;
+
+    // Create the School
     const school = await School.create({
       name,
       schoolCode: schoolCode.toUpperCase(),
@@ -50,7 +56,9 @@ const registerSchool = async (req, res, next) => {
       address,
       city,
       state,
-      status: 'pending',
+      status,
+      approvedBy,
+      approvedAt,
     });
 
     // Create the School Admin
@@ -65,7 +73,9 @@ const registerSchool = async (req, res, next) => {
 
     res.status(201).json({
       success: true,
-      message: 'School registration submitted successfully. Application is pending approval.',
+      message: isSuperAdmin
+        ? `School '${school.name}' onboarded and approved successfully.`
+        : 'School registration submitted successfully. Application is pending approval.',
       data: {
         school,
         admin: {
