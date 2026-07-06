@@ -4,7 +4,6 @@ const cookieParser = require('cookie-parser');
 const rateLimit = require('express-rate-limit');
 
 const AppError = require('./utils/AppError');
-const globalErrorHandler = require('./middleware/error.middleware');
 
 // Route imports
 const authRoutes = require('./routes/auth.routes');
@@ -54,8 +53,5 @@ app.use('/api/attendance', attendanceRoutes);
 app.all('*', (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });
-
-// 7. Global Error Handler Middleware
-app.use(globalErrorHandler);
 
 module.exports = app;

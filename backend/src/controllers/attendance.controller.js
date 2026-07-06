@@ -4,21 +4,16 @@ const AppError = require('../utils/AppError');
 const sendErrorResponse = require('../utils/sendErrorResponse');
 
 // @desc    Mark attendance for students in a class & section
-// @route   POST /api/attendance
-// @access  Private (Teacher Only)
 const markAttendance = async (req, res) => {
   try {
     const { class: className, section, date, records } = req.body;
     const schoolId = req.user.school;
 
-    // Normalize date to midnight to make date-only comparisons robust
     const normalizedDate = new Date(date);
     normalizedDate.setHours(0, 0, 0, 0);
 
-    // Get all student IDs to verify they belong to this school
     const studentIds = records.map((r) => r.student);
 
-    // Verify all students belong to the teacher's school
     const studentsInSchool = await Student.find({
       _id: { $in: studentIds },
       school: schoolId,
@@ -67,8 +62,6 @@ const markAttendance = async (req, res) => {
 };
 
 // @desc    Get attendance records for a school (with filters)
-// @route   GET /api/attendance
-// @access  Private (School Admin / Teacher)
 const getAttendance = async (req, res) => {
   try {
     const schoolId = req.user.school;
@@ -115,13 +108,10 @@ const getAttendance = async (req, res) => {
 };
 
 // @desc    Get attendance history for a specific student
-// @route   GET /api/attendance/student/:studentId
-// @access  Private (School Admin / Teacher / Student)
 const getStudentAttendance = async (req, res) => {
   try {
     const { studentId } = req.params;
 
-    // If role is student, they must only view their own profile attendance
     if (req.user.role === 'student') {
       const studentProfile = await Student.findOne({ user: req.user._id });
       if (!studentProfile || studentProfile._id.toString() !== studentId) {
