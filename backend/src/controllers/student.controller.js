@@ -1,7 +1,38 @@
+const fs = require('fs');
+const csv = require('csv-parser');
 const Student = require('../models/student.model');
 const User = require('../models/user.model');
 const AppError = require('../utils/AppError');
 const sendErrorResponse = require('../utils/sendErrorResponse');
+
+
+const importStudent = async(req, res)=>{
+  const extractedData = [];
+
+// Create a readable stream to process the file chunk by chunk
+fs.createReadStream('students.csv')
+  .pipe(csv()) // Parses raw text into JavaScript objects using headers as keys
+  .on('data', (row) => {
+    // Extract only the specific fields you need
+    const { name, email, password, dateOfBirth, class: className, gender, phone, rollNumber, section } = row;
+    
+    // Store or process the extracted data row-by-row
+    extractedData.push({ name, email, password, dateOfBirth, class: className, gender, phone, rollNumber, section });
+    
+    // Optional: Log them sequentially as they parse
+    console.log(`Extracted: ${name} -> ${email}`);
+  })
+  .on('end', () => {
+    console.log('\nCSV file successfully processed.');
+    console.log('Final Extracted Dataset:', extractedData);
+  })
+  .on('error', (error) => {
+    console.error('An error occurred while reading the CSV:', error.message);
+  });
+
+  User.insertMany(extractedData);
+
+}
 
 // @desc    Create a new student
 // @route   POST /api/students
@@ -255,4 +286,5 @@ module.exports = {
   getStudentById,
   updateStudent,
   deleteStudent,
+  importStudent,
 };
