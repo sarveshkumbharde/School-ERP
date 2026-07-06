@@ -44,7 +44,6 @@ const attendanceSchema = new mongoose.Schema(
 );
 
 // Compound index to guarantee a student only has one attendance record per date
-// Note: dates should be normalized to YYYY-MM-DD 00:00:00.000 before saving
 attendanceSchema.index({ student: 1, date: 1 }, { unique: true });
 
 module.exports = mongoose.model('Attendance', attendanceSchema);

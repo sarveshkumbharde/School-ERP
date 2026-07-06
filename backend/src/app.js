@@ -1,7 +1,6 @@
 const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
-const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 
 const AppError = require('./utils/AppError');
@@ -16,10 +15,7 @@ const attendanceRoutes = require('./routes/attendance.routes');
 
 const app = express();
 
-// 1. Security Headers
-app.use(helmet());
-
-// 2. CORS setup
+// 1. CORS setup
 const corsOptions = {
   origin: process.env.FRONTEND_URL || 'http://localhost:5173',
   credentials: true,
